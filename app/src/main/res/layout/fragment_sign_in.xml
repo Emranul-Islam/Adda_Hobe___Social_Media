@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorWhite"
     tools:context=".SignInFragment">
 
@@ -33,15 +34,18 @@
             android:hint="Email Adress"
             android:textColorHint="@color/colorPrimaryDark" />
 
+<!--        com.google.android.material.textfield.TextInputLayout-->
+
+
         <EditText
             android:id="@+id/sign_in_pass"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimaryDark"
+            android:hint="Password"
             android:layout_margin="10dp"
-            android:hint="Passsword"
-            android:inputType="textPassword"
-            android:textColorHint="@color/colorPrimaryDark" />
+            android:textColorHint="@color/colorPrimary"
+            android:inputType="textPassword"/>
 
         <RelativeLayout
             android:layout_width="wrap_content"
