@@ -26,7 +26,7 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 try {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    Thread.sleep(3000);
+                    Thread.sleep(1000);
                     if (user != null) {
                        Intent mIntent = new Intent(SplashActivity.this,MainActivity.class);
                        startActivity(mIntent);

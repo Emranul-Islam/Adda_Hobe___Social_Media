@@ -1,8 +1,13 @@
 package com.muhammad_sohag.socialmedia;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
@@ -12,14 +17,25 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,9 +46,9 @@ import butterknife.ButterKnife;
 public class Setting extends AppCompatActivity {
 
     @BindView(R.id.setting_profile_image)
-    protected ImageView profile_image;
+    protected ImageView profileImage;
     @BindView(R.id.setting_cover_image)
-    protected ImageView cover_image;
+    protected ImageView coverImage;
     @BindView(R.id.setting_name)
     protected TextView names;
     @BindView(R.id.setting_batch)
@@ -50,6 +66,10 @@ public class Setting extends AppCompatActivity {
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private DocumentReference databaseRef = database.collection("USERS").document(auth.getUid());
+    private StorageReference storeg = FirebaseStorage.getInstance().getReference();
+    private StorageReference profileStoreg = storeg.child("Profile").child(auth.getUid()+".jpg");
+
+    private Uri profileImageURI;
 
 
     @Override
@@ -63,12 +83,7 @@ public class Setting extends AppCompatActivity {
         nameEdit.setOnClickListener(v -> editNameData());
         batchEdit.setOnClickListener(v -> editBatchData());
         departmentEdit.setOnClickListener(v -> editDepartmentData());
-        profile_image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        profileImage.setOnClickListener(v -> selectProfileImage());
 
     }
 
@@ -93,8 +108,8 @@ public class Setting extends AppCompatActivity {
                 requestOptions.placeholder(R.drawable.ic_launcher_background);
                 Glide.with(Setting.this)
                         .setDefaultRequestOptions(requestOptions)
-                        .load(documentSnapshot.getString("photo"))
-                        .into(profile_image);
+                        .load(documentSnapshot.getString("profileUrl"))
+                        .into(profileImage);
             } else {
                 Toast.makeText(Setting.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
@@ -258,4 +273,103 @@ public class Setting extends AppCompatActivity {
                 });
     }
     //--------------Department Name  Method End-----------------*>
+
+
+    //------------Adding crop system------------
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                profileImageURI = result.getUri();
+
+                uploadPhoto();
+
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+                Toast.makeText(this, "Error: "+error, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    //Crop image method:----------->
+    private void cropProfileImage() {
+        CropImage.activity()
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(1, 1)
+                .start(Setting.this);
+
+    }
+
+    //Upload Profile Image
+    private void selectProfileImage() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            if (ContextCompat.checkSelfPermission(Setting.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(Setting.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+
+                cropProfileImage();
+
+            } else {
+                cropProfileImage();
+            }
+
+        } else {
+            cropProfileImage();
+        }
+    }
+
+    //Upload photo to the Online
+    private void uploadPhoto() {
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Profile Image Uploading...");
+        progressDialog.show(); //Progress Dialog is created to loading
+
+        if (profileImageURI != null){
+            profileStoreg.putFile(profileImageURI)
+                    .addOnCompleteListener(Setting.this, new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                            if (task.isSuccessful()){
+                                profileStoreg.getDownloadUrl().addOnCompleteListener(Setting.this,new OnCompleteListener<Uri>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Uri> task) {
+                                        String profileImageDownloadUrl = task.getResult().toString();
+                                        if (profileImageDownloadUrl != null){
+                                            Map<String, Object> link = new HashMap<>();
+                                            link.put("profileUrl",profileImageDownloadUrl);
+                                            databaseRef.update(link)
+                                                    .addOnCompleteListener(Setting.this, new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if (task.isSuccessful()){
+                                                                profileImage.setImageURI(profileImageURI);
+                                                                progressDialog.dismiss();
+                                                            }else{
+                                                                progressDialog.dismiss();
+                                                                Toast.makeText(Setting.this, "Error To update", Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        }
+                                                    });
+                                        }else {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(Setting.this, "Error To getting link", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                            }else{
+                                progressDialog.dismiss();
+                                Toast.makeText(Setting.this, "Error To Upload", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+        }
+    }
+
+
 }
+
+
