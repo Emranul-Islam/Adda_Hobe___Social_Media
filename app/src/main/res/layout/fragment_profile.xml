@@ -28,16 +28,16 @@
             android:layout_height="match_parent"
             android:layout_marginTop="-80dp">
 
+
             <de.hdodenhof.circleimageview.CircleImageView
                 android:layout_centerHorizontal="true"
                 android:layout_width="160dp"
                 android:layout_height="160dp"
                 app:civ_border_width="2dp"
                 app:civ_border_color="@color/colorWhite"
-                android:src="@drawable/ic_launcher_background"
+                android:src="@drawable/add_ic"
                 android:id="@+id/profile_profile_image"
                 android:layout_marginBottom="35dp"/>
-
             <TextView
                 android:id="@+id/profile_name"
                 android:layout_width="match_parent"

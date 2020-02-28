@@ -87,7 +87,7 @@ public class SignUpFragment extends Fragment {
                 setFragment(new SignInFragment());
             }
         });
-        
+
         //Text Change Watcher
         name.addTextChangedListener(new TextWatcher() {
 
