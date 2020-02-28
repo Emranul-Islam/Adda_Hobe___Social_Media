@@ -1,44 +1,92 @@
 package com.muhammad_sohag.socialmedia;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity {
-    private Toolbar toolbar;
+
+    @BindView(R.id.main_frame_layout)
+    protected FrameLayout frameLayout;
+    @BindView(R.id.main_toolbar)
+    protected Toolbar toolbar;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        toolbar = findViewById(R.id.main_toolbar);
+
+        ButterKnife.bind(this);
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Social Media");
+        BottomNavigationView navigationView = findViewById(R.id.bottom_nav);
+        navigationView.setOnNavigationItemSelectedListener(selectedListener);
+
+        //Default Select Fragment:
+        setFragment(new HomeFragment(), "Home");
+
+    }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener selectedListener =
+            item -> {
+                //handle item click
+                switch (item.getItemId()) {
+                    case R.id.home_fragment:
+                        //Home fragment select
+                        setFragment(new HomeFragment(), "Home");
+                        return true;
+                    case R.id.profile_fragment:
+                        //Profile Fragment select
+                        setFragment(new ProfileFragment(), "Profile");
+                        return true;
+                    case R.id.users_fragment:
+                        //All User Fragment select
+                        setFragment(new UsersFragment(), "Users");
+                        return true;
+                }
+                return false;
+            };
+
+    //Fragment Transaction Method:
+    private void setFragment(Fragment fragment, String title) {
+        getSupportActionBar().setTitle(title);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(frameLayout.getId(), fragment);
+        fragmentTransaction.commit();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu,menu);
+        getMenuInflater().inflate(R.menu.menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_edit_profile:
-                Intent profileIntent = new Intent(MainActivity.this,Setting.class);
+                Intent profileIntent = new Intent(MainActivity.this, Setting.class);
                 startActivity(profileIntent);
                 return true;
             case R.id.menu_logout:
                 auth.signOut();
-                Intent logoutIntent = new Intent(MainActivity.this,RegisterActivity.class);
+                Intent logoutIntent = new Intent(MainActivity.this, RegisterActivity.class);
                 startActivity(logoutIntent);
                 finish();
                 return true;

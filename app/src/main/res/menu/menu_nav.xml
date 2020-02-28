@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/home_fragment"
+        android:icon="@drawable/home_ic"
+        android:title="Home" />
+
+    <item
+        android:id="@+id/profile_fragment"
+        android:icon="@drawable/profile_ic"
+        android:title="Profile" />
+
+    <item
+        android:id="@+id/users_fragment"
+        android:icon="@drawable/user_ic"
+        android:title="All User" />
+</menu>
