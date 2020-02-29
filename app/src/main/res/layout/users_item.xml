@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="1dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@color/colorPrimary"
+            android:padding="10dp"
+            android:id="@+id/users_item_image" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Name is Sohag"
+            android:layout_toRightOf="@id/users_item_image"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:textSize="20sp"
+            android:id="@+id/users_item_name" />
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

@@ -250,10 +250,11 @@ public class SignUpFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()){
+                            String userId = auth.getUid();
                             Map<String,Object> value = new HashMap<>();
                             value.put("name",name.getText().toString());
                             value.put("email",email.getText().toString());
-                            String userId = auth.getUid();
+                            value.put("userId",userId);
                             if (userId != null) {
                                 DocumentReference databaseRef = database.collection("USERS").document(userId);
                                 databaseRef.set(value)

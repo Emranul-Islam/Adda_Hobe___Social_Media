@@ -331,7 +331,7 @@ public class Setting extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         progressDialog.dismiss();
-                        Toast.makeText(this, "Success Name Changed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Success Bio Changed", Toast.LENGTH_SHORT).show();
                     } else {
                         progressDialog.dismiss();
                         Toast.makeText(Setting.this, "Error to change: " + task.getException(), Toast.LENGTH_SHORT).show();
