@@ -21,6 +21,7 @@
             android:id="@+id/profile_cover_image"
             android:layout_width="match_parent"
             android:layout_height="150dp"
+            android:scaleType="fitXY"
             android:background="@color/colorPrimaryDark"/>
 
         <RelativeLayout
@@ -33,11 +34,23 @@
                 android:layout_centerHorizontal="true"
                 android:layout_width="160dp"
                 android:layout_height="160dp"
+                android:elevation="1dp"
                 app:civ_border_width="2dp"
                 app:civ_border_color="@color/colorWhite"
                 android:src="@drawable/add_ic"
                 android:id="@+id/profile_profile_image"
-                android:layout_marginBottom="35dp"/>
+                android:layout_marginBottom="35dp" />
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_above="@id/profile_name"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/edit_ic"
+                style="@style/Widget.AppCompat.ImageButton"
+                android:background="@color/colorAlpha"
+                android:elevation="5dp"
+                android:layout_marginBottom="45dp"/>
             <TextView
                 android:id="@+id/profile_name"
                 android:layout_width="match_parent"
@@ -65,8 +78,7 @@
                     android:fontFamily="serif-monospace"
                     android:maxLength="110"
                     android:padding="15dp"
-                    android:text="bangla desh is one of the best country and its will be the bes
-thisn sjs fjsf  sasdlj akdhf aksdhf dskhf skds"
+                    android:text="Happy to see you on my Profile :)"
                     android:textAlignment="center"
                     android:textColor="@color/colorPrimaryDark" />
 
@@ -76,11 +88,13 @@ thisn sjs fjsf  sasdlj akdhf aksdhf dskhf skds"
                     android:layout_below="@+id/profile_bio"
                     android:layout_margin="10dp"
                     android:id="@+id/edit">
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:layout_centerInParent="true">
+
                         <Button
                             android:id="@+id/profile_add_postBTN"
                             android:layout_width="wrap_content"
@@ -92,7 +106,8 @@ thisn sjs fjsf  sasdlj akdhf aksdhf dskhf skds"
                             android:drawableStart="@drawable/add_ic"
                             android:drawablePadding="5dp"
                             style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                            android:text="Add Post"/>
+                            android:text="Add Post" />
+
                         <Button
                             android:id="@+id/profile_editBTN"
                             android:layout_width="wrap_content"
@@ -103,7 +118,7 @@ thisn sjs fjsf  sasdlj akdhf aksdhf dskhf skds"
                             style="@style/Widget.AppCompat.Button.Borderless.Colored"
                             android:drawableStart="@drawable/edit_ic"
                             android:drawablePadding="5dp"
-                            android:text="Edit"/>
+                            android:text="Edit" />
 
                     </LinearLayout>
 
@@ -138,7 +153,6 @@ thisn sjs fjsf  sasdlj akdhf aksdhf dskhf skds"
 
 
             </RelativeLayout>
-
 
 
         </RelativeLayout>

@@ -17,6 +17,7 @@
         android:id="@+id/setting_cover_image"
         android:layout_width="match_parent"
         android:layout_height="150dp"
+        android:scaleType="fitXY"
         android:background="@color/colorPrimaryDark"/>
 
     <RelativeLayout
@@ -33,15 +34,12 @@
             android:src="@drawable/ic_launcher_background"
             android:id="@+id/setting_profile_image"
             android:layout_marginBottom="35dp"/>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="-20dp"
-            android:layout_below="@id/setting_profile_image"
-            android:id="@+id/s_n_rl">
 
             <TextView
+                android:layout_marginTop="-20dp"
+                android:layout_below="@id/setting_profile_image"
                 android:id="@+id/setting_name"
+                android:drawableTop="@drawable/edit_ic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -50,24 +48,17 @@
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="20sp" />
-            <ImageView
-                android:id="@+id/s_name_edit"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/edit_ic"
-                android:padding="2dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"/>
 
-        </RelativeLayout>
 
     <RelativeLayout
-        android:layout_below="@+id/s_n_rl"
+        android:layout_below="@+id/setting_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true">
 
         <TextView
+            android:drawableEnd="@drawable/edit_ic"
+            android:drawablePadding="5dp"
             android:id="@+id/setting_bio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -76,46 +67,35 @@
             android:fontFamily="serif-monospace"
             android:maxLength="110"
             android:padding="15dp"
-            android:text="bangla desh is one of the best country and its will be the bes
-thisn sjs fjsf  sasdlj akdhf aksdhf dskhf skds"
+            android:text="Happy to see you on my Profile :)"
             android:textAlignment="center"
             android:textColor="@color/colorPrimaryDark" />
 
-        <RelativeLayout
-            android:layout_below="@+id/setting_bio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/s_b_rl">
+
 
             <TextView
                 android:id="@+id/setting_batch"
+                android:layout_below="@id/setting_bio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
+                android:drawableStart="@drawable/edit_ic"
+                android:drawablePadding="15dp"
+                android:padding="10dp"
                 android:layout_marginStart="10dp"
                 android:fontFamily="monospace"
                 android:text="Batch Name"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="15sp" />
-            <ImageView
-                android:id="@+id/s_batch_edit"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/edit_ic"
-                android:padding="2dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"/>
 
-        </RelativeLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/s_b_rl"
-            android:id="@+id/s_d_rl">
 
             <TextView
+                android:drawableStart="@drawable/edit_ic"
+                android:drawablePadding="15dp"
+                android:padding="10dp"
                 android:id="@+id/setting_department"
+                android:layout_below="@id/setting_batch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -124,16 +104,7 @@ thisn sjs fjsf  sasdlj akdhf aksdhf dskhf skds"
                 android:text="Department Name"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="15sp" />
-            <ImageView
-                android:id="@+id/s_department_edit"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/edit_ic"
-                android:padding="2dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"/>
 
-        </RelativeLayout>
     </RelativeLayout>
 
         <RelativeLayout

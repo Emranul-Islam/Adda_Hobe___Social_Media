@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -51,25 +52,20 @@ public class Setting extends AppCompatActivity {
     protected ImageView coverImage;
     @BindView(R.id.setting_name)
     protected TextView names;
+    @BindView(R.id.setting_bio)
+    protected TextView bio;
     @BindView(R.id.setting_batch)
     protected TextView batch;
     @BindView(R.id.setting_department)
     protected TextView department;
-    @BindView(R.id.s_name_edit)
-    protected ImageView nameEdit;
-    @BindView(R.id.s_batch_edit)
-    protected ImageView batchEdit;
-    @BindView(R.id.s_department_edit)
-    protected ImageView departmentEdit;
-    private String DATA_NAME, DATA_BATCH, DATA_DEPARTMENT;
+    private String DATA_NAME, DATA_BATCH, DATA_DEPARTMENT,DATA_BIO;
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private DocumentReference databaseRef = database.collection("USERS").document(auth.getUid());
     private StorageReference storeg = FirebaseStorage.getInstance().getReference();
-    private StorageReference profileStoreg = storeg.child("Profile").child(auth.getUid()+".jpg");
-
-    private Uri profileImageURI;
+    private StorageReference coverStoreg = storeg.child("Photo").child("Cover").child(auth.getUid()+".jpg");
+    private Uri coverImageURI;
 
 
     @Override
@@ -78,12 +74,20 @@ public class Setting extends AppCompatActivity {
         setContentView(R.layout.activity_setting);
         ButterKnife.bind(this);
         //Auto Profile Data show :
+        Toolbar toolbar = findViewById(R.id.setting_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Profile Setting");
         loadData();
 
-        nameEdit.setOnClickListener(v -> editNameData());
-        batchEdit.setOnClickListener(v -> editBatchData());
-        departmentEdit.setOnClickListener(v -> editDepartmentData());
-        profileImage.setOnClickListener(v -> selectProfileImage());
+        names.setOnClickListener(v -> editNameData());
+        bio.setOnClickListener(v -> editBioData());
+        batch.setOnClickListener(v -> editBatchData());
+        department.setOnClickListener(v -> editDepartmentData());
+
+        coverImage.setOnClickListener(v -> selectCoverImage());
+        profileImage.setOnClickListener(v -> {
+
+        });
 
     }
 
@@ -93,9 +97,13 @@ public class Setting extends AppCompatActivity {
         databaseRef.addSnapshotListener(this, (documentSnapshot, e) -> {
             if (documentSnapshot != null) {
                 DATA_NAME = documentSnapshot.getString("name");
+                DATA_BIO = documentSnapshot.getString("bio");
                 DATA_BATCH = documentSnapshot.getString("batch");
                 DATA_DEPARTMENT = documentSnapshot.getString("department");
                 names.setText(DATA_NAME);
+                if (DATA_BIO != null){
+                    bio.setText(DATA_BIO);
+                }
                 if (DATA_BATCH != null) {
                     batch.setText(String.format("Batch Name: %s", DATA_BATCH));
                 }
@@ -110,6 +118,12 @@ public class Setting extends AppCompatActivity {
                         .setDefaultRequestOptions(requestOptions)
                         .load(documentSnapshot.getString("profileUrl"))
                         .into(profileImage);
+                Glide.with(Setting.this)
+                        .setDefaultRequestOptions(requestOptions)
+                        .load(documentSnapshot.getString("coverUrl"))
+                        .into(coverImage);
+
+
             } else {
                 Toast.makeText(Setting.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
@@ -274,6 +288,60 @@ public class Setting extends AppCompatActivity {
     }
     //--------------Department Name  Method End-----------------*>
 
+    //Bio   Method:----------------------->
+    private void editBioData() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(Setting.this);
+        builder.setMessage("Edit Bio");
+
+        LinearLayout linearLayout = new LinearLayout(this);
+
+        EditText newEditText = new EditText(this);
+        newEditText.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
+        newEditText.setText(DATA_BIO);
+        newEditText.setHint("Write Bio Max 110 char");
+        newEditText.setMinEms(20);
+        newEditText.setMaxEms(110);
+
+        linearLayout.addView(newEditText);
+        linearLayout.setPadding(10, 10, 10, 10);
+        builder.setView(linearLayout);
+
+        builder.setPositiveButton("Confirm", (dialog, which) -> {
+            ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("Bio Changing...");
+            progressDialog.show(); //Progress Dialog is created to loading
+            String finalBio = newEditText.getText().toString().trim();
+            //Name Change Method Call
+            bioChange(finalBio, progressDialog);
+
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+
+        builder.create().show();
+
+
+    }
+    //Bio Change Method:
+    private void bioChange(String name, ProgressDialog progressDialog) {
+        Map<String, Object> value = new HashMap<>();
+        value.put("bio", name);
+
+        databaseRef.update(value)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        progressDialog.dismiss();
+                        Toast.makeText(this, "Success Name Changed", Toast.LENGTH_SHORT).show();
+                    } else {
+                        progressDialog.dismiss();
+                        Toast.makeText(Setting.this, "Error to change: " + task.getException(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+    //-------------Bio  Method End---------------*>
+
+
 
     //------------Adding crop system------------
 
@@ -284,7 +352,7 @@ public class Setting extends AppCompatActivity {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
-                profileImageURI = result.getUri();
+                coverImageURI = result.getUri();
 
                 uploadPhoto();
 
@@ -296,57 +364,57 @@ public class Setting extends AppCompatActivity {
     }
 
     //Crop image method:----------->
-    private void cropProfileImage() {
+    private void cropCoverImage() {
         CropImage.activity()
                 .setGuidelines(CropImageView.Guidelines.ON)
-                .setAspectRatio(1, 1)
+                .setAspectRatio(2, 1)
                 .start(Setting.this);
 
     }
 
     //Upload Profile Image
-    private void selectProfileImage() {
+    private void selectCoverImage() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
             if (ContextCompat.checkSelfPermission(Setting.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(Setting.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
-                cropProfileImage();
+                cropCoverImage();
 
             } else {
-                cropProfileImage();
+                cropCoverImage();
             }
 
         } else {
-            cropProfileImage();
+            cropCoverImage();
         }
     }
 
     //Upload photo to the Online
     private void uploadPhoto() {
         ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Profile Image Uploading...");
+        progressDialog.setMessage("Cover Image Uploading...");
         progressDialog.show(); //Progress Dialog is created to loading
 
-        if (profileImageURI != null){
-            profileStoreg.putFile(profileImageURI)
+        if (coverImageURI != null){
+            coverStoreg.putFile(coverImageURI)
                     .addOnCompleteListener(Setting.this, new OnCompleteListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                             if (task.isSuccessful()){
-                                profileStoreg.getDownloadUrl().addOnCompleteListener(Setting.this,new OnCompleteListener<Uri>() {
+                                coverStoreg.getDownloadUrl().addOnCompleteListener(Setting.this,new OnCompleteListener<Uri>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Uri> task) {
-                                        String profileImageDownloadUrl = task.getResult().toString();
-                                        if (profileImageDownloadUrl != null){
+                                        String coverImageDownloadUrl = task.getResult().toString();
+                                        if (coverImageDownloadUrl != null){
                                             Map<String, Object> link = new HashMap<>();
-                                            link.put("profileUrl",profileImageDownloadUrl);
+                                            link.put("coverUrl",coverImageDownloadUrl);
                                             databaseRef.update(link)
                                                     .addOnCompleteListener(Setting.this, new OnCompleteListener<Void>() {
                                                         @Override
                                                         public void onComplete(@NonNull Task<Void> task) {
                                                             if (task.isSuccessful()){
-                                                                profileImage.setImageURI(profileImageURI);
+                                                                coverImage.setImageURI(coverImageURI);
                                                                 progressDialog.dismiss();
                                                             }else{
                                                                 progressDialog.dismiss();
