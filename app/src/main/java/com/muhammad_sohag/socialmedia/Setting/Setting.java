@@ -1,4 +1,4 @@
-package com.muhammad_sohag.socialmedia;
+package com.muhammad_sohag.socialmedia.Setting;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -35,6 +34,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.muhammad_sohag.socialmedia.R;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -58,7 +58,7 @@ public class Setting extends AppCompatActivity {
     protected TextView batch;
     @BindView(R.id.setting_department)
     protected TextView department;
-    private String DATA_NAME, DATA_BATCH, DATA_DEPARTMENT,DATA_BIO;
+    private String DATA_NAME, DATA_BATCH, DATA_DEPARTMENT,DATA_BIO,DATA_PROFILE,DATA_COVER;
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -84,9 +84,15 @@ public class Setting extends AppCompatActivity {
         batch.setOnClickListener(v -> editBatchData());
         department.setOnClickListener(v -> editDepartmentData());
 
-        coverImage.setOnClickListener(v -> selectCoverImage());
+        coverImage.setOnClickListener(v -> {
+            Intent coverIntent = new Intent(Setting.this,CoverChange.class);
+            coverIntent.putExtra("cover",DATA_COVER);
+            startActivity(coverIntent);
+        });
         profileImage.setOnClickListener(v -> {
-
+            Intent profileIntent = new Intent(Setting.this, ProfileChange.class);
+            profileIntent.putExtra("profile",DATA_PROFILE);
+            startActivity(profileIntent);
         });
 
     }
@@ -96,6 +102,8 @@ public class Setting extends AppCompatActivity {
     private void loadData() {
         databaseRef.addSnapshotListener(this, (documentSnapshot, e) -> {
             if (documentSnapshot != null) {
+                DATA_PROFILE = documentSnapshot.getString("profileUrl");
+                DATA_COVER = documentSnapshot.getString("coverUrl");
                 DATA_NAME = documentSnapshot.getString("name");
                 DATA_BIO = documentSnapshot.getString("bio");
                 DATA_BATCH = documentSnapshot.getString("batch");
@@ -116,11 +124,11 @@ public class Setting extends AppCompatActivity {
                 requestOptions.placeholder(R.drawable.ic_launcher_background);
                 Glide.with(Setting.this)
                         .setDefaultRequestOptions(requestOptions)
-                        .load(documentSnapshot.getString("profileUrl"))
+                        .load(DATA_PROFILE)
                         .into(profileImage);
                 Glide.with(Setting.this)
                         .setDefaultRequestOptions(requestOptions)
-                        .load(documentSnapshot.getString("coverUrl"))
+                        .load(DATA_COVER)
                         .into(coverImage);
 
 

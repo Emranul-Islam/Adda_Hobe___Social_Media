@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.muhammad_sohag.socialmedia.R;
-import com.muhammad_sohag.socialmedia.Setting;
 import com.muhammad_sohag.socialmedia.UserProfileActivity;
 import com.muhammad_sohag.socialmedia.model.UsersModel;
 import java.util.List;

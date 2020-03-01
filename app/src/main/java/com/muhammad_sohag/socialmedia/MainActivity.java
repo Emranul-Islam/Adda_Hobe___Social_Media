@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.muhammad_sohag.socialmedia.Setting.Setting;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

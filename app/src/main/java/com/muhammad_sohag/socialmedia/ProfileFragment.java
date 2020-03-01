@@ -1,12 +1,7 @@
 package com.muhammad_sohag.socialmedia;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,30 +13,16 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static android.app.Activity.RESULT_OK;
+import com.muhammad_sohag.socialmedia.Setting.Setting;
 
 
 public class ProfileFragment extends Fragment {
@@ -88,10 +69,16 @@ public class ProfileFragment extends Fragment {
         //Load All Data:
         loadData();
         //add post button clicked
-        addPost.setOnClickListener(v -> Toast.makeText(getActivity(), "Add Post Button Clicked", Toast.LENGTH_SHORT).show());
+        addPost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(),AddPostActivity.class);
+                startActivity(intent);
+            }
+        });
         //edit button clicked
         editProfile.setOnClickListener(v -> {
-            Intent eIntent = new Intent(getActivity(),Setting.class);
+            Intent eIntent = new Intent(getActivity(), Setting.class);
             startActivity(eIntent);
         });
 

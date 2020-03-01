@@ -13,8 +13,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".UserProfileActivity"></activity>
-        <activity android:name=".Setting" />
+        <activity android:name=".AddPostActivity"></activity>
+        <activity android:name=".Setting.CoverChange" />
+        <activity android:name=".Setting.ProfileChange" />
+        <activity android:name=".UserProfileActivity" />
+        <activity android:name=".Setting.Setting" />
         <activity android:name=".MainActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".SplashActivity">
