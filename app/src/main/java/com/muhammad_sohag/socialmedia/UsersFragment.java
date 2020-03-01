@@ -31,6 +31,7 @@ public class UsersFragment extends Fragment {
     }
 
     private RecyclerView userRecyclerView;
+    private UsersAdapter usersAdapter;
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference databaseRef = database.collection("USERS");
 
@@ -47,10 +48,9 @@ public class UsersFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        userRecyclerView.setHasFixedSize(true);
         userRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         List<UsersModel> list = new ArrayList<>();
-        UsersAdapter usersAdapter = new UsersAdapter(getContext(),list);
-        userRecyclerView.setAdapter(usersAdapter);
 
 //        list.add(new UsersModel("", "", "", "", "", ""));
 
@@ -63,6 +63,8 @@ public class UsersFragment extends Fragment {
                                 , documentSnapshot.getString("name"), documentSnapshot.getString("batch"), documentSnapshot.getString("department")
                                 , documentSnapshot.getString("userId"),documentSnapshot.getString("userId")));
                     }
+                    usersAdapter = new UsersAdapter(getActivity(),list);
+                    userRecyclerView.setAdapter(usersAdapter);
                     usersAdapter.notifyDataSetChanged();
                 }
             }

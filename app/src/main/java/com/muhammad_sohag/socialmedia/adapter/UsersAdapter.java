@@ -1,11 +1,11 @@
 package com.muhammad_sohag.socialmedia.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.muhammad_sohag.socialmedia.R;
+import com.muhammad_sohag.socialmedia.Setting;
+import com.muhammad_sohag.socialmedia.UserProfileActivity;
 import com.muhammad_sohag.socialmedia.model.UsersModel;
 import java.util.List;
 
@@ -47,7 +49,15 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "Position: "+position, Toast.LENGTH_SHORT).show();
+                Intent showProfileIntent = new Intent(context, UserProfileActivity.class);
+                showProfileIntent.putExtra("name",usersModels.get(position).getName());
+                showProfileIntent.putExtra("bio",usersModels.get(position).getBio());
+                showProfileIntent.putExtra("batch",usersModels.get(position).getBatch());
+                showProfileIntent.putExtra("department",usersModels.get(position).getDepartment());
+                showProfileIntent.putExtra("profile",usersModels.get(position).getProfileImage());
+                showProfileIntent.putExtra("cover",usersModels.get(position).getCoverImage());
+                showProfileIntent.putExtra("userId",usersModels.get(position).getUserId());
+                context.startActivity(showProfileIntent);
             }
         });
 
