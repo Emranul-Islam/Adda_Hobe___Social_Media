@@ -40,7 +40,7 @@ public class ProfileFragment extends Fragment {
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private DocumentReference databaseRef = database.collection("USERS").document(auth.getUid());
 
-    private String DATA_NAME,DATA_BATCH,DATA_DEPARTMENT,DATA_BIO;
+    private String DATA_PROFILE, DATA_COVER, DATA_NAME, DATA_BIO, DATA_BATCH, DATA_DEPARTMENT;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,6 +73,13 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(),AddPostActivity.class);
+                intent.putExtra("profileLink",DATA_PROFILE);
+                intent.putExtra("coverLink",DATA_COVER);
+                intent.putExtra("name",DATA_NAME);
+                intent.putExtra("bio",DATA_BIO);
+                intent.putExtra("batch",DATA_BATCH);
+                intent.putExtra("department",DATA_DEPARTMENT);
+
                 startActivity(intent);
             }
         });
@@ -97,6 +104,8 @@ public class ProfileFragment extends Fragment {
 
         databaseRef.addSnapshotListener((documentSnapshot, e) -> {
             if (documentSnapshot != null) {
+                DATA_PROFILE = documentSnapshot.getString("profileUrl");
+                DATA_COVER = documentSnapshot.getString("coverUrl");
                 DATA_NAME = documentSnapshot.getString("name");
                 DATA_BIO = documentSnapshot.getString("bio");
                 DATA_BATCH = documentSnapshot.getString("batch");
@@ -117,12 +126,12 @@ public class ProfileFragment extends Fragment {
                 requestOptions.placeholder(R.drawable.ic_launcher_background);
                 Glide.with(getActivity())
                         .setDefaultRequestOptions(requestOptions)
-                        .load(documentSnapshot.getString("profileUrl"))
+                        .load(DATA_PROFILE)
                         .into(profileImage);
 
                 Glide.with(getActivity())
                         .setDefaultRequestOptions(requestOptions)
-                        .load(documentSnapshot.getString("coverUrl"))
+                        .load(DATA_COVER)
                         .into(coverImage);
             } else {
                 Toast.makeText(getActivity(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
