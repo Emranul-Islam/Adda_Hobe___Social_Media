@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -127,11 +128,11 @@ public class ProfileChange extends AppCompatActivity {
     //Upload photo to the Online
     private void uploadPhoto() {
         ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Cover Image Uploading...");
+        progressDialog.setMessage("Profile Image Uploading...");
         progressDialog.show(); //Progress Dialog is created to loading
 
         profileRef.putFile(profileImageURI)
-                .addOnCompleteListener(ProfileChange.this, new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                .addOnCompleteListener( new OnCompleteListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                         if (task.isSuccessful()) {
@@ -143,7 +144,7 @@ public class ProfileChange extends AppCompatActivity {
                                         Map<String, Object> link = new HashMap<>();
                                         link.put("profileUrl", profileImageDownloadUrl);
                                         databaseRef.update(link)
-                                                .addOnCompleteListener(ProfileChange.this, new OnCompleteListener<Void>() {
+                                                .addOnCompleteListener( new OnCompleteListener<Void>() {
                                                     @Override
                                                     public void onComplete(@NonNull Task<Void> task) {
                                                         if (task.isSuccessful()) {
@@ -165,6 +166,13 @@ public class ProfileChange extends AppCompatActivity {
                             progressDialog.dismiss();
                             Toast.makeText(ProfileChange.this, "Error To Upload", Toast.LENGTH_SHORT).show();
                         }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+                        Toast.makeText(ProfileChange.this, "Check Internet Connection", Toast.LENGTH_SHORT).show();
                     }
                 });
 

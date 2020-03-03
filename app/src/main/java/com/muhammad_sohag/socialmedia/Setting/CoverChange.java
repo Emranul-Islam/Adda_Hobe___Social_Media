@@ -2,8 +2,11 @@ package com.muhammad_sohag.socialmedia.Setting;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +23,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -36,6 +40,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CoverChange extends AppCompatActivity {
+    //Net Connection verify:
+    private ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+    private NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+    private NetworkInfo mobileNetwork = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
     private ImageView coverImage;
    // private EditText coverCaption;
     private Button coverBtn;
@@ -170,9 +179,17 @@ public class CoverChange extends AppCompatActivity {
                             Toast.makeText(CoverChange.this, "Error To Upload", Toast.LENGTH_SHORT).show();
                         }
                     }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+                        Toast.makeText(CoverChange.this, "Check Internet Connection", Toast.LENGTH_SHORT).show();
+                    }
                 });
 
     }
+
 
 
 }
