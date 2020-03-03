@@ -20,7 +20,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="370dp"
         android:layout_margin="5dp"
         android:id="@+id/post_image_layout"
         android:layout_centerHorizontal="true"
@@ -29,7 +29,7 @@
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="370dp"
             android:layout_margin="5dp"
             android:scaleType="centerCrop"
             android:background="@color/colorGray"
@@ -57,8 +57,8 @@
         android:layout_below="@id/post_image_layout"
         android:layout_above="@id/post_btn"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:maxLength="40"
+        android:layout_height="wrap_content"
+        android:maxLength="400"
         android:hint="Write Post.."
         android:inputType="textMultiLine"
         android:id="@+id/post_caption" />

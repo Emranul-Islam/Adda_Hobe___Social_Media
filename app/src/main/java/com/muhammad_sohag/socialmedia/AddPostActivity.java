@@ -27,7 +27,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -44,14 +43,11 @@ public class AddPostActivity extends AppCompatActivity {
     private Button postBtn, addPhoto;
     private RelativeLayout postImageLayout;
     private Uri imageUri = null;
-    private String time;
 
     private final String userId = FirebaseAuth.getInstance().getUid();
     private StorageReference storage = FirebaseStorage.getInstance().getReference();
-    private StorageReference storageRef = storage.child("Photo").child("Posts");
     private FirebaseFirestore data = FirebaseFirestore.getInstance();
     private CollectionReference dataRef = data.collection("POST");
-    private String profileLink, coverLink, name, bio, batch, department;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,14 +60,6 @@ public class AddPostActivity extends AppCompatActivity {
         postBtn = findViewById(R.id.post_btn);
         addPhoto = findViewById(R.id.post_add_photo);
         postImageLayout = findViewById(R.id.post_image_layout);
-
-        profileLink= getIntent().getStringExtra("profileLink");
-        coverLink= getIntent().getStringExtra("coverLink");
-        name= getIntent().getStringExtra("name");
-        bio= getIntent().getStringExtra("bio");
-        batch= getIntent().getStringExtra("batch");
-        department= getIntent().getStringExtra("department");
-        Log.d("TAG", "onCreate: +"+profileLink+ coverLink+ name+ bio+ batch+ department);
 
 
 
@@ -92,7 +80,7 @@ public class AddPostActivity extends AppCompatActivity {
                     } else {
                         posting(caption, "noImage");
                     }
-                }else {
+                } else {
                     Toast.makeText(AddPostActivity.this, "Select Photo or Write Post", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -123,19 +111,27 @@ public class AddPostActivity extends AppCompatActivity {
         String timestamp = String.valueOf(System.currentTimeMillis());
         if (!imageUri.equals("noImage")) {
             //Image soho kare Upload Hobe
-            storageRef.child(timestamp+".jpg").putFile(Uri.parse(imageUri))
+            //Getting Storage Reference:
+            StorageReference storageRef = storage.child("Photo").child("Posts").child("posts_" + timestamp + ".jpg");
+            storageRef.putFile(Uri.parse(imageUri))
                     .addOnCompleteListener(this, new OnCompleteListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                            if (task.isSuccessful()){
-                                storageRef.getDownloadUrl().addOnCompleteListener( new OnCompleteListener<Uri>() {
+                            if (task.isSuccessful()) {
+                                storageRef.getDownloadUrl().addOnCompleteListener(AddPostActivity.this, new OnCompleteListener<Uri>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Uri> task) {
-                                        String downloadUrl = String.valueOf(task.getResult());
-                                        uploadPost(caption,downloadUrl,timestamp,progressDialog);
+                                        if (task.isSuccessful()) {
+                                            String downloadUrl = String.valueOf(task.getResult());
+                                            uploadPost(caption, downloadUrl, timestamp, progressDialog,storageRef);
+                                        } else {
+                                            storageRef.delete();
+                                            progressDialog.dismiss();
+                                            Toast.makeText(AddPostActivity.this, "Something Wrong" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
                                     }
                                 });
-                            }else{
+                            } else {
                                 progressDialog.dismiss();
                                 Toast.makeText(AddPostActivity.this, "Something Is Wrong", Toast.LENGTH_SHORT).show();
                             }
@@ -143,30 +139,32 @@ public class AddPostActivity extends AppCompatActivity {
                     });
         } else {
             //Image charai upload hobe
-            uploadPost(caption,null, timestamp, progressDialog);
+            uploadPost(caption, null, timestamp, progressDialog, null);
         }
     }
 
-    private void uploadPost(String caption, String downloadUrl, String timestamp, ProgressDialog progressDialog) {
+    private void uploadPost(String caption, String downloadUrl, String timestamp, ProgressDialog progressDialog, StorageReference storageRef) {
         Map<String, Object> data = new HashMap<>();
-        data.put("userId",userId);
-        data.put("name",name);
-        data.put("profileLink",profileLink);
-        data.put("postCaption",caption);
-        data.put("postImageLink",downloadUrl);
-        data.put("timestamp",timestamp);
+        data.put("userId", userId);
+        data.put("postId", timestamp);
+        data.put("postCaption", caption);
+        data.put("postImageLink", downloadUrl);
+        data.put("timestamp", timestamp);
         dataRef.document(timestamp)
                 .set(data)
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             progressDialog.dismiss();
                             Toast.makeText(AddPostActivity.this, "Post Success", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(AddPostActivity.this,MainActivity.class);
+                            Intent intent = new Intent(AddPostActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
-                        }else{
+                        } else {
+                            if (downloadUrl != null){
+                                storageRef.delete();
+                            }
                             progressDialog.dismiss();
                             Toast.makeText(AddPostActivity.this, "Something is wrong", Toast.LENGTH_SHORT).show();
                         }

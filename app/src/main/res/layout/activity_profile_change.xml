@@ -16,17 +16,17 @@
         android:src="@drawable/add_ic"
         android:id="@+id/pc_photo"/>
 
-    <EditText
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="5dp"
-        android:maxLength="40"
-        android:layout_marginEnd="5dp"
-        android:layout_below="@id/pc_photo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Write Caption.."
-        android:inputType="textMultiLine"
-        android:id="@+id/pc_post"/>
+<!--    <EditText-->
+<!--        android:layout_marginTop="20dp"-->
+<!--        android:layout_marginStart="5dp"-->
+<!--        android:maxLength="40"-->
+<!--        android:layout_marginEnd="5dp"-->
+<!--        android:layout_below="@id/pc_photo"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:hint="Write Caption.."-->
+<!--        android:inputType="textMultiLine"-->
+<!--        android:id="@+id/pc_post"/>-->
     <Button
         android:id="@+id/pc_btn"
         android:layout_width="200dp"

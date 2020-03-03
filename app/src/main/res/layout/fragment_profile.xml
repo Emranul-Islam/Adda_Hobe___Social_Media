@@ -20,7 +20,7 @@
         <ImageView
             android:id="@+id/profile_cover_image"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="170dp"
             android:scaleType="fitXY"
             android:background="@color/colorPrimaryDark"/>
 

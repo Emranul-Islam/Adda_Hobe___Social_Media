@@ -13,12 +13,13 @@
         style="@style/ThemeOverlay.AppCompat.ActionBar"
         android:background="@color/colorPrimary"
         android:id="@+id/setting_toolbar"/>
+
     <ImageView
         android:id="@+id/setting_cover_image"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:scaleType="fitXY"
-        android:background="@color/colorPrimaryDark"/>
+        android:layout_height="170dp"
+        android:background="@color/colorPrimaryDark"
+        android:scaleType="fitXY" />
 
     <RelativeLayout
         android:layout_width="match_parent"

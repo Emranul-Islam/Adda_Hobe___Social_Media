@@ -26,49 +26,47 @@ import java.util.List;
 
 public class UsersFragment extends Fragment {
 
-    public UsersFragment() {
-        // Required empty public constructor
-    }
+  public UsersFragment() {
+    // Required empty public constructor
+  }
 
-    private RecyclerView userRecyclerView;
-    private UsersAdapter usersAdapter;
-    private FirebaseFirestore database = FirebaseFirestore.getInstance();
-    private CollectionReference databaseRef = database.collection("USERS");
+  private RecyclerView userRecyclerView;
+  private UsersAdapter usersAdapter;
+  private FirebaseFirestore database = FirebaseFirestore.getInstance();
+  private CollectionReference databaseRef = database.collection("USERS");
 
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_users, container, false);
-        userRecyclerView = view.findViewById(R.id.users_recycler);
-        return view;
-    }
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                           Bundle savedInstanceState) {
+    // Inflate the layout for this fragment
+    View view = inflater.inflate(R.layout.fragment_users, container, false);
+    userRecyclerView = view.findViewById(R.id.users_recycler);
+    return view;
+  }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        userRecyclerView.setHasFixedSize(true);
-        userRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        List<UsersModel> list = new ArrayList<>();
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    userRecyclerView.setHasFixedSize(true);
+    userRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    List<UsersModel> list = new ArrayList<>();
 
-//        list.add(new UsersModel("", "", "", "", "", ""));
+    databaseRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+      @Override
+      public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+        if (queryDocumentSnapshots != null) {
+          for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+            list.add(new UsersModel(documentSnapshot.getString("profileUrl"), documentSnapshot.getString("coverUrl")
+                    , documentSnapshot.getString("name"), documentSnapshot.getString("batch"), documentSnapshot.getString("department")
+                    , documentSnapshot.getString("userId"),documentSnapshot.getString("bio")));
+          }
+          usersAdapter = new UsersAdapter(getActivity(),list);
+          userRecyclerView.setAdapter(usersAdapter);
+          usersAdapter.notifyDataSetChanged();
+        }
+      }
+    });
 
-        databaseRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (queryDocumentSnapshots != null) {
-                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                        list.add(new UsersModel(documentSnapshot.getString("profileUrl"), documentSnapshot.getString("coverUrl")
-                                , documentSnapshot.getString("name"), documentSnapshot.getString("batch"), documentSnapshot.getString("department")
-                                , documentSnapshot.getString("userId"),documentSnapshot.getString("userId")));
-                    }
-                    usersAdapter = new UsersAdapter(getActivity(),list);
-                    userRecyclerView.setAdapter(usersAdapter);
-                    usersAdapter.notifyDataSetChanged();
-                }
-            }
-        });
-
-    }
+  }
 }

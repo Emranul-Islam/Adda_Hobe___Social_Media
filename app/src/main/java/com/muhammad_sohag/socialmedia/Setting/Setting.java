@@ -65,7 +65,7 @@ public class Setting extends AppCompatActivity {
     private DocumentReference databaseRef = database.collection("USERS").document(auth.getUid());
     private StorageReference storeg = FirebaseStorage.getInstance().getReference();
     private StorageReference coverStoreg = storeg.child("Photo").child("Cover").child(auth.getUid()+".jpg");
-    private Uri coverImageURI;
+
 
 
     @Override
@@ -108,6 +108,7 @@ public class Setting extends AppCompatActivity {
                 DATA_BIO = documentSnapshot.getString("bio");
                 DATA_BATCH = documentSnapshot.getString("batch");
                 DATA_DEPARTMENT = documentSnapshot.getString("department");
+
                 names.setText(DATA_NAME);
                 if (DATA_BIO != null){
                     bio.setText(DATA_BIO);
@@ -150,7 +151,7 @@ public class Setting extends AppCompatActivity {
         EditText newEditText = new EditText(this);
         newEditText.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
         newEditText.setText(DATA_NAME);
-        newEditText.setMinEms(10);
+        newEditText.setMinEms(15);
 
         linearLayout.addView(newEditText);
         linearLayout.setPadding(10, 10, 10, 10);
@@ -177,7 +178,7 @@ public class Setting extends AppCompatActivity {
         value.put("name", name);
 
         databaseRef.update(value)
-                .addOnCompleteListener(this, task -> {
+                .addOnCompleteListener(Setting.this, task -> {
                     if (task.isSuccessful()) {
                         progressDialog.dismiss();
                         Toast.makeText(this, "Success Name Changed", Toast.LENGTH_SHORT).show();
@@ -230,7 +231,7 @@ public class Setting extends AppCompatActivity {
         value.put("batch", name);
 
         databaseRef.update(value)
-                .addOnCompleteListener(this, task -> {
+                .addOnCompleteListener(Setting.this, task -> {
                     if (task.isSuccessful()) {
                         progressDialog.dismiss();
                         Toast.makeText(this, "Success Batch Name Changed", Toast.LENGTH_SHORT).show();
@@ -284,7 +285,7 @@ public class Setting extends AppCompatActivity {
         value.put("department", name);
 
         databaseRef.update(value)
-                .addOnCompleteListener(this, task -> {
+                .addOnCompleteListener(Setting.this, task -> {
                     if (task.isSuccessful()) {
                         progressDialog.dismiss();
                         Toast.makeText(this, "Success Department Name Changed", Toast.LENGTH_SHORT).show();
@@ -327,8 +328,6 @@ public class Setting extends AppCompatActivity {
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         builder.create().show();
-
-
     }
     //Bio Change Method:
     private void bioChange(String name, ProgressDialog progressDialog) {
@@ -336,7 +335,7 @@ public class Setting extends AppCompatActivity {
         value.put("bio", name);
 
         databaseRef.update(value)
-                .addOnCompleteListener(this, task -> {
+                .addOnCompleteListener(Setting.this, task -> {
                     if (task.isSuccessful()) {
                         progressDialog.dismiss();
                         Toast.makeText(this, "Success Bio Changed", Toast.LENGTH_SHORT).show();
@@ -350,100 +349,6 @@ public class Setting extends AppCompatActivity {
     //-------------Bio  Method End---------------*>
 
 
-
-    //------------Adding crop system------------
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            if (resultCode == RESULT_OK) {
-                coverImageURI = result.getUri();
-
-                uploadPhoto();
-
-            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Exception error = result.getError();
-                Toast.makeText(this, "Error: "+error, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    //Crop image method:----------->
-    private void cropCoverImage() {
-        CropImage.activity()
-                .setGuidelines(CropImageView.Guidelines.ON)
-                .setAspectRatio(2, 1)
-                .start(Setting.this);
-
-    }
-
-    //Upload Profile Image
-    private void selectCoverImage() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-            if (ContextCompat.checkSelfPermission(Setting.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(Setting.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-
-                cropCoverImage();
-
-            } else {
-                cropCoverImage();
-            }
-
-        } else {
-            cropCoverImage();
-        }
-    }
-
-    //Upload photo to the Online
-    private void uploadPhoto() {
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Cover Image Uploading...");
-        progressDialog.show(); //Progress Dialog is created to loading
-
-        if (coverImageURI != null){
-            coverStoreg.putFile(coverImageURI)
-                    .addOnCompleteListener(Setting.this, new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                            if (task.isSuccessful()){
-                                coverStoreg.getDownloadUrl().addOnCompleteListener(Setting.this,new OnCompleteListener<Uri>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Uri> task) {
-                                        String coverImageDownloadUrl = task.getResult().toString();
-                                        if (coverImageDownloadUrl != null){
-                                            Map<String, Object> link = new HashMap<>();
-                                            link.put("coverUrl",coverImageDownloadUrl);
-                                            databaseRef.update(link)
-                                                    .addOnCompleteListener(Setting.this, new OnCompleteListener<Void>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<Void> task) {
-                                                            if (task.isSuccessful()){
-                                                                coverImage.setImageURI(coverImageURI);
-                                                                progressDialog.dismiss();
-                                                            }else{
-                                                                progressDialog.dismiss();
-                                                                Toast.makeText(Setting.this, "Error To update", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        }
-                                                    });
-                                        }else {
-                                            progressDialog.dismiss();
-                                            Toast.makeText(Setting.this, "Error To getting link", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                });
-                            }else{
-                                progressDialog.dismiss();
-                                Toast.makeText(Setting.this, "Error To Upload", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-        }
-    }
 
 
 }

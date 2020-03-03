@@ -8,22 +8,22 @@
     <ImageView
         android:id="@+id/cc_photo"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="170dp"
         android:background="@color/colorGray"
         android:src="@drawable/add_ic"
         android:layout_margin="10dp" />
 
-    <EditText
-        android:id="@+id/cc_caption"
-        android:maxLength="40"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/cc_photo"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="5dp"
-        android:hint="Write Caption.."
-        android:inputType="textMultiLine" />
+<!--    <EditText-->
+<!--        android:id="@+id/cc_caption"-->
+<!--        android:maxLength="40"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_below="@id/cc_photo"-->
+<!--        android:layout_marginStart="5dp"-->
+<!--        android:layout_marginTop="40dp"-->
+<!--        android:layout_marginEnd="5dp"-->
+<!--        android:hint="Write Caption.."-->
+<!--        android:inputType="textMultiLine" />-->
 
     <Button
         android:id="@+id/cc_btn"

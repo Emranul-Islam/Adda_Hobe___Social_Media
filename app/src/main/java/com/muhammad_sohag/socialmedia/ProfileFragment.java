@@ -73,13 +73,6 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(),AddPostActivity.class);
-                intent.putExtra("profileLink",DATA_PROFILE);
-                intent.putExtra("coverLink",DATA_COVER);
-                intent.putExtra("name",DATA_NAME);
-                intent.putExtra("bio",DATA_BIO);
-                intent.putExtra("batch",DATA_BATCH);
-                intent.putExtra("department",DATA_DEPARTMENT);
-
                 startActivity(intent);
             }
         });
