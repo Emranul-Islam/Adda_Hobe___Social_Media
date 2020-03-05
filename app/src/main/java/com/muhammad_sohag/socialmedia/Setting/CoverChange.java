@@ -2,17 +2,13 @@ package com.muhammad_sohag.socialmedia.Setting;
 
 import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -40,13 +36,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CoverChange extends AppCompatActivity {
-    //Net Connection verify:
-    private ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-    private NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-    private NetworkInfo mobileNetwork = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 
     private ImageView coverImage;
-   // private EditText coverCaption;
+    // private EditText coverCaption;
     private Button coverBtn;
     private Uri coverImageURI;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -63,7 +55,7 @@ public class CoverChange extends AppCompatActivity {
         setContentView(R.layout.activity_cover_change);
 
         coverBtn = findViewById(R.id.cc_btn);
-      //  coverCaption = findViewById(R.id.cc_caption);
+        //  coverCaption = findViewById(R.id.cc_caption);
         coverImage = findViewById(R.id.cc_photo);
 
         coverImage.setOnClickListener(new View.OnClickListener() {
@@ -76,9 +68,9 @@ public class CoverChange extends AppCompatActivity {
         coverBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (coverImageURI != null){
+                if (coverImageURI != null) {
                     uploadPhoto();
-                }else {
+                } else {
                     Toast.makeText(CoverChange.this, "Please Select Image", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -159,7 +151,7 @@ public class CoverChange extends AppCompatActivity {
                                                         if (task.isSuccessful()) {
                                                             progressDialog.dismiss();
                                                             Toast.makeText(CoverChange.this, "Cover Change Success", Toast.LENGTH_SHORT).show();
-                                                            Intent intent = new Intent(CoverChange.this, MainActivity.class);
+                                                            Intent intent = new Intent(CoverChange.this, Setting.class);
                                                             startActivity(intent);
                                                             finish();
                                                         } else {
@@ -189,7 +181,6 @@ public class CoverChange extends AppCompatActivity {
                 });
 
     }
-
 
 
 }

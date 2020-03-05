@@ -1,10 +1,14 @@
 package com.muhammad_sohag.socialmedia;
 
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +18,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.muhammad_sohag.socialmedia.Setting.Setting;
+import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,7 +29,10 @@ public class MainActivity extends AppCompatActivity {
     protected FrameLayout frameLayout;
     @BindView(R.id.main_toolbar)
     protected Toolbar toolbar;
+    @BindView(R.id.main_net_connection)
+    protected TextView netConnection;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +40,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
+        //Net Connection verify:
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo mobileNetwork = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (wifi.isConnected() || mobileNetwork.isConnected()) {
+            netConnection.setVisibility(View.GONE);
+        } else {
+            netConnection.setVisibility(View.VISIBLE);
+        }
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Social Media");
@@ -81,15 +97,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_edit_profile:
-                Intent profileIntent = new Intent(MainActivity.this, Setting.class);
-                startActivity(profileIntent);
+            case R.id.menu_add_post:
+                Intent addPostIntent = new Intent(MainActivity.this, AddPostActivity.class);
+                startActivity(addPostIntent);
                 return true;
             case R.id.menu_logout:
                 auth.signOut();
-                Intent logoutIntent = new Intent(MainActivity.this, RegisterActivity.class);
-                startActivity(logoutIntent);
-                finish();
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user == null) {
+                    Intent mIntent = new Intent(MainActivity.this, SplashActivity.class);
+                    startActivity(mIntent);
+                    finish();
+                } //todo: ekhane ekta bug achce fix korte hobe
+
                 return true;
         }
         return super.onOptionsItemSelected(item);

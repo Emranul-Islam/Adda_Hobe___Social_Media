@@ -4,16 +4,18 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,6 +42,7 @@ public class AddPostActivity extends AppCompatActivity {
 
     private ImageView postImage, postImageClear;
     private EditText postCaption;
+    private TextView netConnection;
     private Button postBtn, addPhoto;
     private RelativeLayout postImageLayout;
     private Uri imageUri = null;
@@ -60,8 +63,17 @@ public class AddPostActivity extends AppCompatActivity {
         postBtn = findViewById(R.id.post_btn);
         addPhoto = findViewById(R.id.post_add_photo);
         postImageLayout = findViewById(R.id.post_image_layout);
+        netConnection = findViewById(R.id.post_net_connection);
 
-
+        //Net Connection verify:
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo mobileNetwork = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (wifi.isConnected() || mobileNetwork.isConnected()){
+            netConnection.setVisibility(View.GONE);
+        }else {
+            netConnection.setVisibility(View.VISIBLE);
+        }
 
         addPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,14 +86,18 @@ public class AddPostActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String caption = postCaption.getText().toString();
 
-                if (!TextUtils.isEmpty(caption) || imageUri != null) {
-                    if (imageUri != null) {
-                        posting(caption, String.valueOf(imageUri));
+                if (wifi.isConnected() || mobileNetwork.isConnected()) {
+                    if (!TextUtils.isEmpty(caption) || imageUri != null) {
+                        if (imageUri != null) {
+                            posting(caption, String.valueOf(imageUri));
+                        } else {
+                            posting(caption, "noImage");
+                        }
                     } else {
-                        posting(caption, "noImage");
+                        Toast.makeText(AddPostActivity.this, "Select Photo or Write Post", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(AddPostActivity.this, "Select Photo or Write Post", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddPostActivity.this, "Check internet connection", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -123,7 +139,8 @@ public class AddPostActivity extends AppCompatActivity {
                                     public void onComplete(@NonNull Task<Uri> task) {
                                         if (task.isSuccessful()) {
                                             String downloadUrl = String.valueOf(task.getResult());
-                                            uploadPost(caption, downloadUrl, timestamp, progressDialog,storageRef);
+
+                                            uploadPost(caption, downloadUrl, timestamp, progressDialog, storageRef);
                                         } else {
                                             storageRef.delete();
                                             progressDialog.dismiss();
@@ -139,7 +156,7 @@ public class AddPostActivity extends AppCompatActivity {
                     });
         } else {
             //Image charai upload hobe
-            uploadPost(caption, null, timestamp, progressDialog, null);
+            uploadPost(caption, "noImage", timestamp, progressDialog, null);
         }
     }
 
@@ -162,7 +179,7 @@ public class AddPostActivity extends AppCompatActivity {
                             startActivity(intent);
                             finish();
                         } else {
-                            if (downloadUrl != null){
+                            if (downloadUrl != null) {
                                 storageRef.delete();
                             }
                             progressDialog.dismiss();

@@ -49,13 +49,13 @@ public class SignInFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-       View view =inflater.inflate(R.layout.fragment_sign_in, container, false);
+        View view =inflater.inflate(R.layout.fragment_sign_in, container, false);
         dontHaveAccount = view.findViewById(R.id.sign_in_creat_account);
-       frameLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.register_frame_layout);
-       email = view.findViewById(R.id.sign_in_email);
-       pass  = view.findViewById(R.id.sign_in_pass);
-       signInBtn = view.findViewById(R.id.sign_in_btn);
-       signInProgress = view.findViewById(R.id.sign_in_progressbar);
+        frameLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.register_frame_layout);
+        email = view.findViewById(R.id.sign_in_email);
+        pass  = view.findViewById(R.id.sign_in_pass);
+        signInBtn = view.findViewById(R.id.sign_in_btn);
+        signInProgress = view.findViewById(R.id.sign_in_progressbar);
 
         return view;
     }

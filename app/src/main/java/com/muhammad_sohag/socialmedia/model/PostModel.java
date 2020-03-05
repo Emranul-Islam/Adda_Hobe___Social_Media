@@ -22,6 +22,7 @@ public class PostModel {
         this.timestamp = timestamp;
     }
 
+
     public String getUserId() {
         return userId;
     }

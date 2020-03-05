@@ -279,7 +279,7 @@ public class SignUpFragment extends Fragment {
                             }
                         }else {
                             Log.e(TAG, "onComplete: Failed=" + Objects.requireNonNull(task.getException()).getMessage());
-                            Toast.makeText(getActivity(), "Error to create account", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                             signUpProgress.setVisibility(View.GONE);
 
                         }

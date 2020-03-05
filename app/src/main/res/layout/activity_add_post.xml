@@ -5,11 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AddPostActivity">
+    <TextView
+        android:id="@+id/post_net_connection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorRed"
+        android:drawableEnd="@drawable/wifi_of_ic"
+        android:padding="10dp"
+        android:text="Please chack internet connection.."
+        android:textColor="@color/colorWhite"
+        android:textSize="18sp" />
 
     <Button
         android:padding="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/post_net_connection"
         android:id="@+id/post_add_photo"
         android:layout_margin="10dp"
         android:text="Add Photo"

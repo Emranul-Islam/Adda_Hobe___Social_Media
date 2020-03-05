@@ -3,6 +3,7 @@ package com.muhammad_sohag.socialmedia;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +15,28 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.muhammad_sohag.socialmedia.Setting.Setting;
+import com.muhammad_sohag.socialmedia.adapter.PostAdapter;
+import com.muhammad_sohag.socialmedia.model.PostModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ProfileFragment extends Fragment {
@@ -34,11 +48,13 @@ public class ProfileFragment extends Fragment {
     private TextView name, bio, batchName, departmentName;
     private ImageView profileImage, coverImage;
     private Button addPost, editProfile;
-    private Uri profileUri;
-    private StorageReference store = FirebaseStorage.getInstance().getReference();
+    private RecyclerView postRecycler;
+    private static final String TAG ="ProfileFragment";
+
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private DocumentReference databaseRef = database.collection("USERS").document(auth.getUid());
+    private CollectionReference postRef = database.collection("POST");
 
     private String DATA_PROFILE, DATA_COVER, DATA_NAME, DATA_BIO, DATA_BATCH, DATA_DEPARTMENT;
 
@@ -56,6 +72,7 @@ public class ProfileFragment extends Fragment {
         coverImage = view.findViewById(R.id.profile_cover_image);
         addPost = view.findViewById(R.id.profile_add_postBTN);
         editProfile = view.findViewById(R.id.profile_editBTN);
+        postRecycler = view.findViewById(R.id.profile_recycler);
 
 
         return view;
@@ -89,6 +106,36 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        //postLoad:
+        postLoad();
+
+    }
+
+    private void postLoad() {
+        postRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+        postRecycler.setHasFixedSize(true);
+        List<PostModel> postModels = new ArrayList<>();
+        PostAdapter adapter = new PostAdapter(getActivity(),postModels);
+        postRecycler.setAdapter(adapter);
+
+        Query query = postRef.whereEqualTo("userId",auth.getUid()).orderBy("postId",Query.Direction.DESCENDING);
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots != null) {
+                    for (DocumentChange documentChange: queryDocumentSnapshots.getDocumentChanges()){
+                        if (documentChange.getType()== DocumentChange.Type.ADDED){
+                            PostModel postModel = documentChange.getDocument().toObject(PostModel.class);
+                            postModels.add(postModel);
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+
+                }else {
+                   Log.d(TAG, "onEvent: "+e);
+                }
+            }
+        });
     }
 
     //Load Data start:------------------------->
@@ -131,92 +178,5 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
-    /*----------Load Data End------------------*>
-
-//    /*---------Profile Image Proceeding start---------------*/
-////    private void uploadProfileImage() {
-////        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-////            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-////                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-////                cropProfileImage();
-////
-////            } else {
-////                cropProfileImage();
-////                Toast.makeText(getActivity(), "Hello", Toast.LENGTH_SHORT).show();
-////            }
-////        } else {
-////            cropProfileImage();
-////        }
-////    }
-//    //------------Adding crop system------------
-////    @Override
-////    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-////        super.onActivityResult(requestCode, resultCode, data);
-////        Toast.makeText(getActivity(), "Bal", Toast.LENGTH_SHORT).show();
-////        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-////            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-////            if (resultCode == RESULT_OK) {
-////                profileUri = result.getUri();
-////                Toast.makeText(getActivity(), "This: "+profileUri, Toast.LENGTH_SHORT).show();
-////                uploadProfileDatabase(profileUri);
-////
-////            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-////                Exception error = result.getError();
-////                Toast.makeText(getActivity(), "Error: " + error, Toast.LENGTH_SHORT).show();
-////            }
-////        }
-////    }
-//    //Crop image method:----------->
-//    private void cropProfileImage() {
-//        CropImage.activity()
-//                .setGuidelines(CropImageView.Guidelines.ON)
-//                .setAspectRatio(1, 1)
-//                .start(getActivity());
-//
-//    }
-//    //Upload Image on server:
-//    private void uploadProfileDatabase(Uri profileUri) {
-//        StorageReference profileStorage = store.child("Photo").child("Profile").child(auth.getUid()+".jpg");
-//        ProgressDialog progressDialog = new ProgressDialog(getActivity());
-//        progressDialog.setMessage("Profile Image Uploading...");
-//        progressDialog.show(); //Progress Dialog is created to loading
-//        Toast.makeText(getActivity(), "Asche", Toast.LENGTH_SHORT).show();
-//        if (profileUri != null){
-//            Toast.makeText(getActivity(), "Dokche", Toast.LENGTH_SHORT).show();
-//            profileStorage.putFile(profileUri)
-//                    .addOnCompleteListener(getActivity(), new OnCompleteListener<UploadTask.TaskSnapshot>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-//                            if (task.isSuccessful()){
-//                                profileStorage.getDownloadUrl().addOnCompleteListener(getActivity(),new OnCompleteListener<Uri>() {
-//                                    @Override
-//                                    public void onComplete(@NonNull Task<Uri> task) {
-//                                        String profileImageDownloadUrl = task.getResult().toString();
-//                                        Map<String, Object> link = new HashMap<>();
-//                                        link.put("profileUrl",profileImageDownloadUrl);
-//                                        databaseRef.update(link)
-//                                                .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
-//                                                    @Override
-//                                                    public void onComplete(@NonNull Task<Void> task) {
-//                                                        if (task.isSuccessful()){
-//                                                            profileImage.setImageURI(profileUri);
-//                                                            progressDialog.dismiss();
-//                                                        }else{
-//                                                            progressDialog.dismiss();
-//                                                            Toast.makeText(getActivity(), "Error To update", Toast.LENGTH_SHORT).show();
-//                                                        }
-//                                                    }
-//                                                });
-//                                    }
-//                                });
-//                            }else{
-//                                progressDialog.dismiss();
-//                                Toast.makeText(getActivity(), "Error To Upload", Toast.LENGTH_SHORT).show();
-//                            }
-//                        }
-//                    });
-//        }
-//    }
-//    /*---------Profile Image Proceeding End---------------*/
 
 }

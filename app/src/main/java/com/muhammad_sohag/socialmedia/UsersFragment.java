@@ -11,10 +11,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.muhammad_sohag.socialmedia.adapter.UsersAdapter;
@@ -32,6 +34,7 @@ public class UsersFragment extends Fragment {
 
   private RecyclerView userRecyclerView;
   private UsersAdapter usersAdapter;
+  FirebaseAuth auth = FirebaseAuth.getInstance();
   private FirebaseFirestore database = FirebaseFirestore.getInstance();
   private CollectionReference databaseRef = database.collection("USERS");
 
@@ -56,6 +59,7 @@ public class UsersFragment extends Fragment {
       @Override
       public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
         if (queryDocumentSnapshots != null) {
+          list.clear();
           for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
             list.add(new UsersModel(documentSnapshot.getString("profileUrl"), documentSnapshot.getString("coverUrl")
                     , documentSnapshot.getString("name"), documentSnapshot.getString("batch"), documentSnapshot.getString("department")
