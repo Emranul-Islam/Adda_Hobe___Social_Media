@@ -51,11 +51,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
                 Intent showProfileIntent = new Intent(context, UserProfileActivity.class);
                 showProfileIntent.putExtra("userId",usersModels.get(position).getUserId());
                 showProfileIntent.putExtra("name",usersModels.get(position).getName());
-                showProfileIntent.putExtra("bio",usersModels.get(position).getBio());
-                showProfileIntent.putExtra("batch",usersModels.get(position).getBatch());
-                showProfileIntent.putExtra("department",usersModels.get(position).getDepartment());
                 showProfileIntent.putExtra("profile",usersModels.get(position).getProfileImage());
-                showProfileIntent.putExtra("cover",usersModels.get(position).getCoverImage());
                 context.startActivity(showProfileIntent);
             }
         });

@@ -33,7 +33,7 @@
                 android:textStyle="bold"
                 android:layout_toEndOf="@+id/item_post_profile_image"
                 android:text="Muhammad Sohag"
-                android:textColor="@color/colorBlack"
+                android:textColor="@color/colorTextHigh"
                 android:textSize="15sp" />
 
             <TextView
@@ -43,6 +43,7 @@
                 android:layout_below="@id/item_post_profile_name"
                 android:layout_toRightOf="@id/item_post_profile_image"
                 android:textSize="12sp"
+                android:textColor="@color/colorTextMed"
                 android:text="10/10/2019 10:15 AM" />
 
             <TextView
@@ -50,6 +51,7 @@
                 style="@style/TextAppearance.AppCompat.Small"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/colorTextMed"
                 android:layout_below="@id/item_post_profile_image"
                 android:layout_marginTop="10dp"
                 android:layout_marginStart="10dp"
@@ -96,24 +98,28 @@
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/item_post_like"
                 android:text="20 Likes"
+                android:textColor="@color/colorTextMed"
                 android:textSize="12sp"
                 android:layout_centerVertical="true" />
 
             <ImageView
                 android:id="@+id/item_post_comment"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/user_ic" />
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="5dp"
+                android:layout_toStartOf="@+id/item_post_comment_count"
+                android:src="@drawable/comment_ic" />
 
             <TextView
                 android:id="@+id/item_post_comment_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/item_post_comment"
-                android:text="10 Comments"
                 android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="20dp"
+                android:text="Comments"
+                android:textColor="@color/colorTextMed"
                 android:textSize="12sp" />
 
         </RelativeLayout>

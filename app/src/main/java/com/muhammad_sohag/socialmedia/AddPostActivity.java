@@ -1,7 +1,6 @@
 package com.muhammad_sohag.socialmedia;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
@@ -32,6 +31,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.muhammad_sohag.socialmedia.Custom.LoadingDialog;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -52,11 +52,14 @@ public class AddPostActivity extends AppCompatActivity {
     private FirebaseFirestore data = FirebaseFirestore.getInstance();
     private CollectionReference dataRef = data.collection("POST");
 
+    private LoadingDialog loadingDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_post);
 
+        loadingDialog = new LoadingDialog(AddPostActivity.this);
         postImage = findViewById(R.id.post_photo);
         postImageClear = findViewById(R.id.post_clear);
         postCaption = findViewById(R.id.post_caption);
@@ -64,6 +67,7 @@ public class AddPostActivity extends AppCompatActivity {
         addPhoto = findViewById(R.id.post_add_photo);
         postImageLayout = findViewById(R.id.post_image_layout);
         netConnection = findViewById(R.id.post_net_connection);
+
 
         //Net Connection verify:
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
@@ -121,9 +125,8 @@ public class AddPostActivity extends AppCompatActivity {
     }
 
     private void posting(String caption, String imageUri) {
-        ProgressDialog progressDialog = new ProgressDialog(AddPostActivity.this);
-        progressDialog.setMessage("Posting..");
-        progressDialog.show();
+        loadingDialog.startLoadingDialog();
+
         String timestamp = String.valueOf(System.currentTimeMillis());
         if (!imageUri.equals("noImage")) {
             //Image soho kare Upload Hobe
@@ -140,27 +143,27 @@ public class AddPostActivity extends AppCompatActivity {
                                         if (task.isSuccessful()) {
                                             String downloadUrl = String.valueOf(task.getResult());
 
-                                            uploadPost(caption, downloadUrl, timestamp, progressDialog, storageRef);
+                                            uploadPost(caption, downloadUrl, timestamp, storageRef);
                                         } else {
                                             storageRef.delete();
-                                            progressDialog.dismiss();
+                                            loadingDialog.dismissLoadingDialog();
                                             Toast.makeText(AddPostActivity.this, "Something Wrong" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 });
                             } else {
-                                progressDialog.dismiss();
+                                loadingDialog.dismissLoadingDialog();
                                 Toast.makeText(AddPostActivity.this, "Something Is Wrong", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
         } else {
             //Image charai upload hobe
-            uploadPost(caption, "noImage", timestamp, progressDialog, null);
+            uploadPost(caption, "noImage", timestamp, null);
         }
     }
 
-    private void uploadPost(String caption, String downloadUrl, String timestamp, ProgressDialog progressDialog, StorageReference storageRef) {
+    private void uploadPost(String caption, String downloadUrl, String timestamp, StorageReference storageRef) {
         Map<String, Object> data = new HashMap<>();
         data.put("userId", userId);
         data.put("postId", timestamp);
@@ -173,7 +176,7 @@ public class AddPostActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            progressDialog.dismiss();
+                            loadingDialog.dismissLoadingDialog();
                             Toast.makeText(AddPostActivity.this, "Post Success", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(AddPostActivity.this, MainActivity.class);
                             startActivity(intent);
@@ -182,7 +185,7 @@ public class AddPostActivity extends AppCompatActivity {
                             if (downloadUrl != null) {
                                 storageRef.delete();
                             }
-                            progressDialog.dismiss();
+                            loadingDialog.dismissLoadingDialog();
                             Toast.makeText(AddPostActivity.this, "Something is wrong", Toast.LENGTH_SHORT).show();
                         }
                     }

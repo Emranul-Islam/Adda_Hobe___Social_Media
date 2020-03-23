@@ -1,7 +1,6 @@
 package com.muhammad_sohag.socialmedia.Setting;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -9,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -28,6 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.muhammad_sohag.socialmedia.Custom.LoadingDialog;
 import com.muhammad_sohag.socialmedia.MainActivity;
 import com.muhammad_sohag.socialmedia.R;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -127,9 +126,9 @@ public class ProfileChange extends AppCompatActivity {
 
     //Upload photo to the Online
     private void uploadPhoto() {
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Profile Image Uploading...");
-        progressDialog.show(); //Progress Dialog is created to loading
+        //Progress Dialog is created to loading
+        LoadingDialog loadingDialog = new LoadingDialog(this);
+        loadingDialog.startLoadingDialog();
 
         profileRef.putFile(profileImageURI)
                 .addOnCompleteListener( new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -148,13 +147,13 @@ public class ProfileChange extends AppCompatActivity {
                                                     @Override
                                                     public void onComplete(@NonNull Task<Void> task) {
                                                         if (task.isSuccessful()) {
-                                                            progressDialog.dismiss();
+                                                            loadingDialog.dismissLoadingDialog();
                                                             Toast.makeText(ProfileChange.this, "Profile Change Success", Toast.LENGTH_SHORT).show();
                                                             Intent intent = new Intent(ProfileChange.this, MainActivity.class);
                                                             startActivity(intent);
                                                             finish();
                                                         } else {
-                                                            progressDialog.dismiss();
+                                                            loadingDialog.dismissLoadingDialog();
                                                             Toast.makeText(ProfileChange.this, "Error To update", Toast.LENGTH_SHORT).show();
                                                         }
                                                     }
@@ -163,7 +162,7 @@ public class ProfileChange extends AppCompatActivity {
                                 }
                             });
                         } else {
-                            progressDialog.dismiss();
+                            loadingDialog.dismissLoadingDialog();
                             Toast.makeText(ProfileChange.this, "Error To Upload", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -171,7 +170,7 @@ public class ProfileChange extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        progressDialog.dismiss();
+                        loadingDialog.dismissLoadingDialog();
                         Toast.makeText(ProfileChange.this, "Check Internet Connection", Toast.LENGTH_SHORT).show();
                     }
                 });

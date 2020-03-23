@@ -12,7 +12,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorWhite"
         android:orientation="vertical">
 
 
@@ -52,7 +51,7 @@
                 android:fontFamily="sans-serif-black"
                 android:text="Names"
                 android:textAlignment="center"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="@color/colorTextHigh"
                 android:textSize="20sp" />
 
             <RelativeLayout
@@ -71,7 +70,7 @@
                     android:padding="15dp"
                     android:text="Happy to see you on my Profile :)"
                     android:textAlignment="center"
-                    android:textColor="@color/colorPrimaryDark" />
+                    android:textColor="@color/colorTextMed" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -126,7 +125,7 @@
                     android:fontFamily="monospace"
                     android:text="Batch Name"
                     android:layout_margin="10dp"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textColor="@color/colorTextMed"
                     android:textSize="15sp" />
 
                 <TextView
@@ -139,7 +138,7 @@
                     android:fontFamily="monospace"
                     android:text="Department Name"
                     android:layout_margin="10dp"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textColor="@color/colorTextMed"
                     android:textSize="15sp" />
 
 
@@ -151,10 +150,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/profile_recycler"
-            android:layout_marginTop="15dp">
-
-
-        </androidx.recyclerview.widget.RecyclerView>
+            android:layout_marginTop="15dp"/>
 
 
 

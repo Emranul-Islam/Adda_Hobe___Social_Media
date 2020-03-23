@@ -1,7 +1,6 @@
 package com.muhammad_sohag.socialmedia.Setting;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -27,7 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.muhammad_sohag.socialmedia.MainActivity;
+import com.muhammad_sohag.socialmedia.Custom.LoadingDialog;
 import com.muhammad_sohag.socialmedia.R;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -128,9 +127,8 @@ public class CoverChange extends AppCompatActivity {
 
     //Upload photo to the Online
     private void uploadPhoto() {
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Cover Image Uploading...");
-        progressDialog.show(); //Progress Dialog is created to loading
+        LoadingDialog loadingDialog = new LoadingDialog(this);
+        loadingDialog.startLoadingDialog(); //Progress Dialog is created to loading
 
         coverRef.putFile(coverImageURI)
                 .addOnCompleteListener(CoverChange.this, new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -149,25 +147,25 @@ public class CoverChange extends AppCompatActivity {
                                                     @Override
                                                     public void onComplete(@NonNull Task<Void> task) {
                                                         if (task.isSuccessful()) {
-                                                            progressDialog.dismiss();
+                                                            loadingDialog.dismissLoadingDialog();
                                                             Toast.makeText(CoverChange.this, "Cover Change Success", Toast.LENGTH_SHORT).show();
                                                             Intent intent = new Intent(CoverChange.this, Setting.class);
                                                             startActivity(intent);
                                                             finish();
                                                         } else {
-                                                            progressDialog.dismiss();
+                                                            loadingDialog.dismissLoadingDialog();
                                                             Toast.makeText(CoverChange.this, "Error To update", Toast.LENGTH_SHORT).show();
                                                         }
                                                     }
                                                 });
                                     } else {
-                                        progressDialog.dismiss();
+                                        loadingDialog.dismissLoadingDialog();
                                         Toast.makeText(CoverChange.this, "Error To getting link", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });
                         } else {
-                            progressDialog.dismiss();
+                            loadingDialog.dismissLoadingDialog();
                             Toast.makeText(CoverChange.this, "Error To Upload", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -175,7 +173,7 @@ public class CoverChange extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        progressDialog.dismiss();
+                        loadingDialog.dismissLoadingDialog();
                         Toast.makeText(CoverChange.this, "Check Internet Connection", Toast.LENGTH_SHORT).show();
                     }
                 });

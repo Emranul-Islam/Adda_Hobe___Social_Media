@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -59,45 +60,64 @@ public class UserProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user_profile);
         ButterKnife.bind(this);
 
+
         //Getting data from adapter:
-        String dataName = getIntent().getStringExtra("name");
-        String dataBio = getIntent().getStringExtra("bio");
-        String dataBatch = getIntent().getStringExtra("batch");
-        String dataDepartment = getIntent().getStringExtra("department");
-        String dataProfile = getIntent().getStringExtra("profile");
-        String dataCover = getIntent().getStringExtra("cover");
-        String dataUserId = getIntent().getStringExtra("userId");
 
-        Toast.makeText(this, "user "+dataUserId, Toast.LENGTH_SHORT).show();
-        Toast.makeText(this, "name "+dataName, Toast.LENGTH_SHORT).show();
+        String userIdData = getIntent().getStringExtra("userId");
+
+
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(dataName);
+
+
+        //realtime user info retrive hobe firebase theke:
+        realTimeProfileInfo(userIdData);
         //post gola dekar method call kora hoiche:
-        postLoad(dataUserId);
-
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions.placeholder(R.drawable.ic_launcher_background);
-
-        Glide.with(this)
-                .setDefaultRequestOptions(requestOptions)
-                .load(dataProfile)
-                .into(profileImage);
-        Glide.with(this)
-                .setDefaultRequestOptions(requestOptions)
-                .load(dataCover)
-                .into(coverImage);
-        name.setText(dataName);
-        if (dataBio != null) {
-            bio.setText(dataBio);
-        }
-        if (dataBatch != null) {
-            batch.setText(String.format("Batch Name: %s", dataBatch));
-        }
-        if (dataDepartment != null) {
-            department.setText(String.format("Department Name: %s", dataDepartment));
-        }
+        postLoad(userIdData);
 
 
+    }
+
+    private void realTimeProfileInfo(String dataUserId) {
+        database.collection("USERS").document(dataUserId)
+                .addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                        if (documentSnapshot != null){
+                            String profileLink = documentSnapshot.getString("profileUrl");
+                            String coverLink = documentSnapshot.getString("coverUrl");
+                            String nameData = documentSnapshot.getString("name");
+                            String bioData = documentSnapshot.getString("bio");
+                            String batchData = documentSnapshot.getString("batch");
+                            String departmentData = documentSnapshot.getString("department");
+
+                            getSupportActionBar().setTitle(nameData);
+                            name.setText(nameData);
+
+                            RequestOptions requestOptions = new RequestOptions();
+                            requestOptions.placeholder(R.drawable.ic_launcher_background);
+                            Glide.with(UserProfileActivity.this)
+                                    .setDefaultRequestOptions(requestOptions)
+                                    .load(profileLink)
+                                    .into(profileImage);
+
+                            RequestOptions ro = new RequestOptions();
+                            ro.placeholder(R.drawable.ic_launcher_background);
+                            Glide.with(UserProfileActivity.this)
+                                    .setDefaultRequestOptions(ro)
+                                    .load(coverLink)
+                                    .into(coverImage);
+                            if (bioData != null) {
+                                bio.setText(bioData);
+                            }
+                            if (batchData != null) {
+                                batch.setText(String.format("Batch Name: %s", batchData));
+                            }
+                            if (departmentData != null) {
+                                department.setText(String.format("Department Name: %s", departmentData));
+                            }
+                        }
+                    }
+                });
     }
 
     //show user post
@@ -107,21 +127,17 @@ public class UserProfileActivity extends AppCompatActivity {
         List<PostModel> postModels = new ArrayList<>();
         PostAdapter adapter = new PostAdapter(UserProfileActivity.this, postModels);
         userPostRecycler.setAdapter(adapter);
-        Toast.makeText(this, "1 --"+userId, Toast.LENGTH_SHORT).show();
         Query query = postRef.whereEqualTo("userId", userId);
         query.orderBy("postId", Query.Direction.DESCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                         if (queryDocumentSnapshots != null) {
-                            Toast.makeText(UserProfileActivity.this, "2", Toast.LENGTH_SHORT).show();
                             for (DocumentChange documentChange : queryDocumentSnapshots.getDocumentChanges()) {
                                 if (documentChange.getType() == DocumentChange.Type.ADDED) {
-                                    Toast.makeText(UserProfileActivity.this, "3", Toast.LENGTH_SHORT).show();
                                     PostModel postModel = documentChange.getDocument().toObject(PostModel.class);
                                     postModels.add(postModel);
                                     adapter.notifyDataSetChanged();
-                                    Toast.makeText(UserProfileActivity.this, "4", Toast.LENGTH_SHORT).show();
                                 }
                             }
 

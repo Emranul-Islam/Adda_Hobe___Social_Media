@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#004953</color>
+
+    <color name="colorPrimaryDark">#01343C</color>
+    <color name="colorAccent">#1976D2</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBlack">#000000</color>
-    <color name="colorRed">#E00303</color>
-    <color name="colorKijani">#FF5722</color>
+    <color name="colorRed">#DC1212</color>
+    <color name="colorKijani">#3F1A10</color>
     <color name="colorGray">#CCCBC9</color>
     <color name="colorAlpha">#5EFFFFFF</color>
+
+
+<!--    <color name="colorPrimary">#004953</color>-->
+<!--    <color name="colorPrimaryDark">#013A41</color>-->
+<!--    <color name="colorTextHigh">#DEFFFFFF</color>-->
+<!--    <color name="colorTextMed">#99FFFFFF</color>-->
+<!--    <color name="colorTextLow">#61FFFFFF</color>-->
+<!--    Color For Dark Theme:-->
+    <color name="colorTextHigh">#000000</color>
+    <color name="colorTextMed">#DE000000</color>
+    <color name="colorTextLow">#61000000</color>
 </resources>

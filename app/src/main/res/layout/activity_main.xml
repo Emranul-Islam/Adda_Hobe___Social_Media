@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
     tools:context=".MainActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -41,6 +40,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="?android:attr/windowBackground"
+        app:elevation="3dp"
         app:menu="@menu/menu_nav" />
 
 </RelativeLayout>
+
+
+    <!--        android:background="?android:attr/windowBackground"-->

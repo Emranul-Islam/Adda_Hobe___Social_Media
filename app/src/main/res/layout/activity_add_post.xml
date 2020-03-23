@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AddPostActivity">
+
     <TextView
         android:id="@+id/post_net_connection"
         android:layout_width="match_parent"

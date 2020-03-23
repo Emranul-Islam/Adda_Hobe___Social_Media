@@ -18,8 +18,8 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.muhammad_sohag.socialmedia.Custom.LoadingDialog;
 import com.muhammad_sohag.socialmedia.adapter.PostAdapter;
 import com.muhammad_sohag.socialmedia.model.PostModel;
 
@@ -37,6 +37,7 @@ public class HomeFragment extends Fragment {
     private RecyclerView recyclerView;
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference databaseRaf = database.collection("POST");
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -53,24 +54,28 @@ public class HomeFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         List<PostModel> postModelList = new ArrayList<>();
-        PostAdapter adapter = new PostAdapter(getActivity(),postModelList);
+        PostAdapter adapter = new PostAdapter(getActivity(), postModelList);
         recyclerView.setAdapter(adapter);
+        LoadingDialog dialog = new LoadingDialog(getActivity());
+        dialog.startLoadingDialog();
 
-        Query query = databaseRaf.orderBy("timestamp", Query.Direction.DESCENDING);
-        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        Query firstQuery = databaseRaf.limit(3).orderBy("timestamp", Query.Direction.DESCENDING);
+        firstQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (queryDocumentSnapshots != null) {
-                    for (DocumentChange documentChange: queryDocumentSnapshots.getDocumentChanges()){
-                        if (documentChange.getType()== DocumentChange.Type.ADDED){
+                    for (DocumentChange documentChange : queryDocumentSnapshots.getDocumentChanges()) {
+                        if (documentChange.getType() == DocumentChange.Type.ADDED) {
                             PostModel postModel = documentChange.getDocument().toObject(PostModel.class);
                             postModelList.add(postModel);
                             adapter.notifyDataSetChanged();
+                            dialog.dismissLoadingDialog();
                         }
                     }
 
-                }else {
-                    Toast.makeText(getActivity(), "Error: "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    dialog.dismissLoadingDialog();
                 }
             }
         });

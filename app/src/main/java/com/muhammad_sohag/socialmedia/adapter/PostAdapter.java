@@ -2,6 +2,7 @@ package com.muhammad_sohag.socialmedia.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -29,6 +30,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.muhammad_sohag.socialmedia.R;
+import com.muhammad_sohag.socialmedia.UserProfileActivity;
 import com.muhammad_sohag.socialmedia.model.PostModel;
 
 import java.util.Calendar;
@@ -73,6 +75,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         holder.postTimestamp.setText(timestamp);
         holder.postCaption.setText(postModelList.get(position).getPostCaption());
 
+        // click korle post karir profile e jabe:
+        holder.profileName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent showProfileIntent = new Intent(context, UserProfileActivity.class);
+                //kicho data onno activity te send kora hocche:
+                showProfileIntent.putExtra("userId",postModelList.get(position).getUserId());
+                showProfileIntent.putExtra("name",postModelList.get(position).getName());
+                showProfileIntent.putExtra("profile",postModelList.get(position).getProfileLink());
+                context.startActivity(showProfileIntent);
+            }
+        });
         //Realtime profile name and image set
         profileSetup(holder.profileName, holder.profileImage, userId);
 
@@ -194,7 +208,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         void likeCount(int count){
             likeCount = itemView.findViewById(R.id.item_post_like_count);
-            likeCount.setText(count +" Likes");
+            likeCount.setText(count +" Stars");
         }
     }
 }

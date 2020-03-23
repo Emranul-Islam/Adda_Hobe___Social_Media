@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="2dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardElevation="1dp">
 
@@ -23,6 +24,7 @@
             android:layout_toRightOf="@id/users_item_image"
             android:layout_centerVertical="true"
             android:layout_marginStart="10dp"
+            android:textColor="@color/colorTextHigh"
             android:textSize="20sp"
             android:id="@+id/users_item_name" />
 
